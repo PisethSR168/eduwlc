@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:eduwlc/view/splash.dart';
+import 'package:eduwlc/view/home_page.dart';
+import 'package:eduwlc/view/course_detail.dart';
+import 'package:eduwlc/view/profile_page.dart';
 
 void main() {
   runApp(const MyApp());
