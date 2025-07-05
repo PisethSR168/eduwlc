@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constant.dart';
+import 'score_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -108,10 +109,20 @@ class _HomePageState extends State<HomePage> {
                   title: 'Live course',
                   color: kLiveColor,
                 ),
-                _buildCategoryCard(
-                  icon: Icons.leaderboard,
-                  title: 'Leaderboard',
-                  color: kLeaderboardColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScorePage(),
+                      ),
+                    );
+                  },
+                  child: _buildCategoryCard(
+                    icon: Icons.score,
+                    title: 'Score',
+                    color: kLeaderboardColor,
+                  ),
                 ),
               ],
             ),

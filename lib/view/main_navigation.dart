@@ -18,7 +18,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomePage(),
     const SubjectPage(),
     const GrowingPage(),
-    const ProfilePage(),
+    const ProfilePage(),    
   ];
 
   @override

@@ -14,7 +14,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhiteColor,
+      backgroundColor: kWhiteColor, 
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         elevation: 0,
