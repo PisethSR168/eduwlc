@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constant.dart';
-import 'main_navigation.dart';
+import 'login_user.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -20,7 +20,7 @@ class _SplashState extends State<Splash> {
     if (mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainNavigation()),
+        MaterialPageRoute(builder: (context) => const LoginUser()),
       );
     }
   }
