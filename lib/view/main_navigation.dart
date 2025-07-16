@@ -39,10 +39,7 @@ class _MainNavigationState extends State<MainNavigation> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.subject), label: 'Subject'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up),
-            label: 'Growing',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: 'Book'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'My'),
         ],
       ),
