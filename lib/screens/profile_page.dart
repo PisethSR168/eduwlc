@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'package:eduwlc/constant.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

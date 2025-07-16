@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'package:eduwlc/constant.dart';
 
 class CourseDetailPage extends StatefulWidget {
   const CourseDetailPage({super.key});
@@ -14,7 +14,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhiteColor, 
+      backgroundColor: kWhiteColor,
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         elevation: 0,

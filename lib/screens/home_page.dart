@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'package:eduwlc/constant.dart';
 import 'score_page.dart';
 
 class HomePage extends StatefulWidget {
