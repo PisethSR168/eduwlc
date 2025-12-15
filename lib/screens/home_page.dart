@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
             margin: const EdgeInsets.only(right: 16),
             child: Icon(
               Icons.notifications_outlined,
-              color: kPrimaryColor,
+              color: const Color.fromARGB(255, 75, 51, 212),
               size: 28,
             ),
           ),
@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   'More',
                   style: TextStyle(
-                    color: kPrimaryColor,
+                    color: const Color.fromARGB(255, 75, 51, 212),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),

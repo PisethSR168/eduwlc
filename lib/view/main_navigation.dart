@@ -34,7 +34,7 @@ class _MainNavigationState extends State<MainNavigation> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: kPrimaryColor,
+        selectedItemColor: const Color.fromARGB(255, 75, 51, 212),
         unselectedItemColor: kGreyColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),

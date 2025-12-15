@@ -307,9 +307,7 @@ class _ScorePageState extends State<ScorePage> {
                   ),
 
                   // Subject Rows
-                  ...subjects
-                      .map((subject) => _buildSubjectRow(subject))
-                      .toList(),
+                  ...subjects.map((subject) => _buildSubjectRow(subject)),
                 ],
               ),
             ),

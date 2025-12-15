@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constant.dart';
+import 'package:eduwlc/view/login_user.dart';
+// IMPORTANT: Adjust this import path if your file location is different
+import '../services/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -9,8 +12,122 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService = AuthService();
+  Map<String, dynamic>? _userData;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final data = await _authService.getProfile();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+
+        // FIX: Check for the nested 'user' key based on your successful login response
+        if (data != null && data.containsKey('user')) {
+          _userData = data['user'];
+        }
+        // Fallback: If the API returns the user object directly (unwrapped)
+        else if (data != null &&
+            (data.containsKey('name') || data.containsKey('email'))) {
+          _userData = data;
+        } else {
+          _userData = null;
+        }
+      });
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    // Optional: Show a progress indicator
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logging out...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+
+    // Call the logout API and clear local token
+    await _authService.logout();
+
+    // Navigate to the Login screen and clear the navigation stack
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginUser()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: kWhiteColor,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_userData == null) {
+      return Scaffold(
+        backgroundColor: kWhiteColor,
+        appBar: AppBar(
+          backgroundColor: kWhiteColor,
+          elevation: 0,
+          title: const Text(
+            'My Profile',
+            style: TextStyle(color: kDarkGreyColor),
+          ),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Failed to load profile data.',
+                style: TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 20),
+              // Offer a retry or re-login path
+              ElevatedButton(
+                onPressed: _fetchProfile,
+                child: const Text('Retry Load'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _handleLogout,
+                child: const Text('Go to Login'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Safely extract data
+    final String userName = _userData!['name'] ?? 'User Name N/A';
+    final String userEmail = _userData!['email'] ?? 'N/A';
+    final String studentId = _userData!['id']?.toString() ?? 'N/A';
+    final String avatarUrl = _userData!['avatar_url'] ?? '';
+
+    // FIX: Client-side replacement for Android Emulator IP (127.0.0.1 -> 10.0.2.2)
+    final String displayAvatarUrl =
+        avatarUrl.isNotEmpty
+            ? avatarUrl.replaceFirst('127.0.0.1', '10.0.2.2')
+            : '';
+
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
@@ -44,7 +161,10 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [kPrimaryColor, kSecondaryColor],
+                  colors: [
+                    const Color.fromARGB(255, 75, 51, 212),
+                    const Color.fromARGB(255, 99, 78, 255),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -55,11 +175,23 @@ class _ProfilePageState extends State<ProfilePage> {
                   CircleAvatar(
                     radius: 40,
                     backgroundColor: kWhiteColor,
-                    child: Icon(Icons.person, size: 50, color: kPrimaryColor),
+                    // Use the corrected image URL here
+                    backgroundImage:
+                        displayAvatarUrl.isNotEmpty
+                            ? NetworkImage(displayAvatarUrl)
+                            : null,
+                    child:
+                        displayAvatarUrl.isEmpty
+                            ? Icon(
+                              Icons.person,
+                              size: 50,
+                              color: const Color.fromARGB(255, 75, 51, 212),
+                            )
+                            : null,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'John Doe',
+                    userName, // Display fetched name
                     style: TextStyle(
                       color: kWhiteColor,
                       fontSize: 20,
@@ -67,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text(
-                    'Student ID: 2024001',
+                    'Email: $userEmail', // Display fetched email
                     style: TextStyle(
                       color: kWhiteColor.withOpacity(0.8),
                       fontSize: 14,
@@ -77,6 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      // You might want to use real stats from the API here later
                       _buildStatItem('Courses', '12'),
                       _buildStatItem('Hours', '48'),
                       _buildStatItem('Certificates', '3'),
@@ -87,7 +220,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 24),
 
-            // Menu Items
+            // Menu Items (Unchanged)
             _buildMenuItem(
               icon: Icons.book_outlined,
               title: 'My Courses',
@@ -139,21 +272,24 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 20),
 
             // Logout Button
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: kBookstoreColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: kBookstoreColor),
-              ),
-              child: Text(
-                'Logout',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: kBookstoreColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: _handleLogout, // Calls the API and clears local token
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: kBookstoreColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: kBookstoreColor),
+                ),
+                child: Text(
+                  'Logout',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: kBookstoreColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -195,10 +331,14 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: kPrimaryColor.withOpacity(0.1),
+            color: const Color.fromARGB(255, 75, 51, 212).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: kPrimaryColor, size: 24),
+          child: Icon(
+            icon,
+            color: const Color.fromARGB(255, 75, 51, 212),
+            size: 24,
+          ),
         ),
         title: Text(
           title,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:eduwlc/screens/course_detail_page.dart';
 import 'package:eduwlc/constant.dart';
 import 'package:eduwlc/models/subject.dart';
-import 'package:eduwlc/models/paginated_response.dart';
 import 'package:eduwlc/services/subject_service.dart';
 import 'package:intl/intl.dart';
 
@@ -15,7 +14,7 @@ class SubjectPage extends StatefulWidget {
 
 class _SubjectPageState extends State<SubjectPage> {
   final SubjectService _subjectService = SubjectService();
-  List<Subject> _subjects = [];
+  final List<Subject> _subjects = [];
   int _currentPage = 1;
   int _lastPage = 1;
   bool _isLoadingMore = false;
@@ -101,7 +100,7 @@ class _SubjectPageState extends State<SubjectPage> {
                     ElevatedButton(
                       onPressed: () => _fetchSubjects(isRefresh: true),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: kPrimaryColor,
+                        backgroundColor: const Color.fromARGB(255, 75, 51, 212),
                         foregroundColor: kWhiteColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 32,

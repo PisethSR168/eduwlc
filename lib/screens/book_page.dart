@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:eduwlc/models/book.dart';
-import 'package:eduwlc/models/paginated_response.dart';
 import 'package:eduwlc/services/book_service.dart';
 import 'package:intl/intl.dart';
 
@@ -12,11 +11,10 @@ class BookListPage extends StatefulWidget {
 }
 
 class _BookListPageState extends State<BookListPage> {
-  late Future<PaginatedResponse<Book>> _booksFuture;
   final BookService _bookService = BookService();
   int _currentPage = 1;
   int _lastPage = 1;
-  List<Book> _books = [];
+  final List<Book> _books = [];
   bool _isLoadingMore = false;
 
   @override
