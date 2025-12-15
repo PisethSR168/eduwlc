@@ -40,7 +40,7 @@ class _ScorePageState extends State<ScorePage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [kPrimaryColor.withOpacity(0.1), kLightGreyColor],
+            colors: [kPrimaryColor.withValues(alpha: 0.1), kLightGreyColor],
           ),
         ),
         child: SingleChildScrollView(
@@ -61,7 +61,7 @@ class _ScorePageState extends State<ScorePage> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: kPrimaryColor.withOpacity(0.3),
+                      color: kPrimaryColor.withValues(alpha: 0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -82,7 +82,7 @@ class _ScorePageState extends State<ScorePage> {
                     Text(
                       'Track your progress across all terms',
                       style: TextStyle(
-                        color: kWhiteColor.withOpacity(0.9),
+                        color: kWhiteColor.withValues(alpha: 0.9),
                         fontSize: 14,
                       ),
                     ),
@@ -172,7 +172,7 @@ class _ScorePageState extends State<ScorePage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -187,8 +187,8 @@ class _ScorePageState extends State<ScorePage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  kPrimaryColor.withOpacity(0.1),
-                  kSecondaryColor.withOpacity(0.1),
+                  kPrimaryColor.withValues(alpha: 0.1),
+                  kSecondaryColor.withValues(alpha: 0.1),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -365,7 +365,7 @@ class _ScorePageState extends State<ScorePage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: gradeColor.withOpacity(0.1),
+                color: gradeColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: gradeColor, width: 1),
               ),

@@ -36,9 +36,11 @@ class _BookListPageState extends State<BookListPage> {
         _isLoadingMore = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
       setState(() {
         _isLoadingMore = false;
       });

@@ -57,9 +57,11 @@ class _SubjectPageState extends State<SubjectPage> {
         _hasError = true;
         _errorMessage = 'Failed to load subjects: ${e.toString()}';
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_errorMessage)));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(_errorMessage)));
+      }
     } finally {
       setState(() {
         _isLoadingMore = false;
@@ -193,8 +195,8 @@ class _SubjectPageState extends State<SubjectPage> {
                                       Text(
                                         subject.description,
                                         style: TextStyle(
-                                          color: kDarkGreyColor.withOpacity(
-                                            0.8,
+                                          color: kDarkGreyColor.withValues(
+                                            alpha: 0.8,
                                           ),
                                         ),
                                         maxLines: 2,

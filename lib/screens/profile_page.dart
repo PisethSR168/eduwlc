@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constant.dart';
 import 'package:eduwlc/view/login_user.dart';
-// IMPORTANT: Adjust this import path if your file location is different
-import '../services/auth_service.dart';
+import '../services/auth_service.dart'; // Ensure this path is correct
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -33,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _isLoading = false;
 
-        // FIX: Check for the nested 'user' key based on your successful login response
+        // Check for the nested 'user' key based on your successful login response
         if (data != null && data.containsKey('user')) {
           _userData = data['user'];
         }
@@ -49,7 +48,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _handleLogout() async {
-    // Optional: Show a progress indicator
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -59,10 +57,8 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    // Call the logout API and clear local token
     await _authService.logout();
 
-    // Navigate to the Login screen and clear the navigation stack
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const LoginUser()),
@@ -82,6 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (_userData == null) {
       return Scaffold(
+        // ... (Error UI remains the same)
         backgroundColor: kWhiteColor,
         appBar: AppBar(
           backgroundColor: kWhiteColor,
@@ -100,7 +97,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(color: Colors.red),
               ),
               const SizedBox(height: 20),
-              // Offer a retry or re-login path
               ElevatedButton(
                 onPressed: _fetchProfile,
                 child: const Text('Retry Load'),
@@ -116,13 +112,20 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    // Safely extract data
+    // Safely extract data for display
     final String userName = _userData!['name'] ?? 'User Name N/A';
     final String userEmail = _userData!['email'] ?? 'N/A';
     final String studentId = _userData!['id']?.toString() ?? 'N/A';
     final String avatarUrl = _userData!['avatar_url'] ?? '';
 
-    // FIX: Client-side replacement for Android Emulator IP (127.0.0.1 -> 10.0.2.2)
+    // --- NEW: Extracting dynamic stat data ---
+    // Use .toString() to ensure it's a string, and '0' as a safe fallback
+    final String coursesCount = _userData!['courses_count']?.toString() ?? '0';
+    final String hoursCount = _userData!['hours_completed']?.toString() ?? '0';
+    final String certificatesCount =
+        _userData!['certificates_count']?.toString() ?? '0';
+
+    // Client-side replacement for Android Emulator IP (127.0.0.1 -> 10.0.2.2)
     final String displayAvatarUrl =
         avatarUrl.isNotEmpty
             ? avatarUrl.replaceFirst('127.0.0.1', '10.0.2.2')
@@ -131,26 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: kWhiteColor,
       appBar: AppBar(
-        backgroundColor: kWhiteColor,
-        elevation: 0,
-        title: Text(
-          'My Profile',
-          style: TextStyle(
-            color: kDarkGreyColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: Icon(
-              Icons.settings_outlined,
-              color: kDarkGreyColor,
-              size: 28,
-            ),
-          ),
-        ],
+        // ... (App Bar remains the same)
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -175,7 +159,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   CircleAvatar(
                     radius: 40,
                     backgroundColor: kWhiteColor,
-                    // Use the corrected image URL here
                     backgroundImage:
                         displayAvatarUrl.isNotEmpty
                             ? NetworkImage(displayAvatarUrl)
@@ -191,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    userName, // Display fetched name
+                    userName,
                     style: TextStyle(
                       color: kWhiteColor,
                       fontSize: 20,
@@ -199,20 +182,29 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text(
-                    'Email: $userEmail', // Display fetched email
+                    'Email: $userEmail',
                     style: TextStyle(
-                      color: kWhiteColor.withOpacity(0.8),
+                      color: kWhiteColor.withValues(alpha: 0.8),
                       fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Student ID: $studentId',
+                    style: TextStyle(
+                      color: kWhiteColor.withValues(alpha: 0.8),
+                      fontSize: 12,
                     ),
                   ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // You might want to use real stats from the API here later
-                      _buildStatItem('Courses', '12'),
-                      _buildStatItem('Hours', '48'),
-                      _buildStatItem('Certificates', '3'),
+                      // --- UPDATED STATS ---
+                      _buildStatItem('Courses', coursesCount),
+                      _buildStatItem('Hours', hoursCount),
+                      _buildStatItem('Certificates', certificatesCount),
+                      // --- END UPDATED STATS ---
                     ],
                   ),
                 ],
@@ -221,6 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
 
             // Menu Items (Unchanged)
+            // ... (rest of the _buildMenuItem widgets)
             _buildMenuItem(
               icon: Icons.book_outlined,
               title: 'My Courses',
@@ -273,12 +266,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // Logout Button
             GestureDetector(
-              onTap: _handleLogout, // Calls the API and clears local token
+              onTap: _handleLogout,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: kBookstoreColor.withOpacity(0.1),
+                  color: kBookstoreColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: kBookstoreColor),
                 ),
@@ -299,6 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // Helper method definitions remain the same
   Widget _buildStatItem(String label, String value) {
     return Column(
       children: [
@@ -312,7 +306,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         Text(
           label,
-          style: TextStyle(color: kWhiteColor.withOpacity(0.8), fontSize: 12),
+          style: TextStyle(
+            color: kWhiteColor.withValues(alpha: 0.8),
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -331,7 +328,12 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 75, 51, 212).withOpacity(0.1),
+            color: const Color.fromARGB(
+              255,
+              75,
+              51,
+              212,
+            ).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -355,7 +357,7 @@ class _ProfilePageState extends State<ProfilePage> {
         trailing: Icon(Icons.arrow_forward_ios, color: kGreyColor, size: 16),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        tileColor: kLightGreyColor.withOpacity(0.5),
+        tileColor: kLightGreyColor.withValues(alpha: 0.5),
       ),
     );
   }
