@@ -1,8 +1,6 @@
 import 'main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../services/auth_service.dart';
-//import 'package:http/http.dart' as http;
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
@@ -72,7 +70,7 @@ class _LoginUserState extends State<LoginUser> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Login', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromARGB(255, 75, 51, 212),
+        backgroundColor: const Color.fromARGB(255, 0, 227, 42),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: ListView(
@@ -108,27 +106,16 @@ class _LoginUserState extends State<LoginUser> {
           Container(
             padding: const EdgeInsets.all(15),
             child: ElevatedButton(
-              onPressed:
-                  _isLoading
-                      ? null
-                      : _attemptLogin, // Disable button while loading
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 75, 51, 212),
-              ),
-              child:
-                  _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3.0,
-                        ),
-                      )
-                      : const Text(
-                        'Login',
-                        style: TextStyle(color: Colors.white),
-                      ),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MainNavigation(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: Text('Login'),
             ),
           ),
         ],

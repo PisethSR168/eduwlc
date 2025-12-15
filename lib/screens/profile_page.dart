@@ -158,23 +158,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: kWhiteColor,
-                    backgroundImage:
-                        displayAvatarUrl.isNotEmpty
-                            ? NetworkImage(displayAvatarUrl)
-                            : null,
-                    child:
-                        displayAvatarUrl.isEmpty
-                            ? Icon(
-                              Icons.person,
-                              size: 50,
-                              color: const Color.fromARGB(255, 75, 51, 212),
-                            )
-                            : null,
+                    backgroundImage: AssetImage('assets/Piseth.jpg'),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    userName,
+                    'PISETH SONG',
                     style: TextStyle(
                       color: kWhiteColor,
                       fontSize: 20,
