@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eduwlc/constant.dart';
+import 'package:eduwlc/constants/constant.dart';
 import 'package:eduwlc/view/login_user.dart';
 import '../services/auth_service.dart'; // Ensure this path is correct
 

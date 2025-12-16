@@ -1,32 +1,16 @@
+import 'package:eduwlc/constants/constant.dart';
+import 'package:eduwlc/providers/auth_provider.dart';
+import 'package:eduwlc/view/main_navigation.dart';
 import 'package:flutter/material.dart';
-import '../constant.dart';
+import 'package:provider/provider.dart';
 import 'login_user.dart';
 
-class Splash extends StatefulWidget {
+class Splash extends StatelessWidget {
   const Splash({super.key});
-  @override
-  State<Splash> createState() => _SplashState();
-}
 
-class _SplashState extends State<Splash> {
-  @override
-  void initState() {
-    super.initState();
-    _navigateToHome();
-  }
+  Widget _buildSplashUI(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
 
-  _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3));
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginUser()),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Center(
@@ -43,10 +27,28 @@ class _SplashState extends State<Splash> {
               ),
               const SizedBox(height: 20),
               Text(kAppName, style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 50),
+              if (authProvider.isLoading)
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.isLoading) {
+      return _buildSplashUI(context);
+    } else {
+      return authProvider.isAuthenticated
+          ? const MainNavigation()
+          : const LoginUser();
+    }
   }
 }

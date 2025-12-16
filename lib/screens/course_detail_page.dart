@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eduwlc/constant.dart';
+import 'package:eduwlc/constants/constant.dart';
 import 'package:eduwlc/models/subject.dart';
 
 class CourseDetailPage extends StatelessWidget {
@@ -50,18 +50,6 @@ class CourseDetailPage extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   'Code: ${subject.code}',
-                  style: TextStyle(fontSize: 18, color: kDarkGreyColor),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            Row(
-              children: [
-                Icon(Icons.business, color: kGreyColor, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Department: ${subject.department.name}',
                   style: TextStyle(fontSize: 18, color: kDarkGreyColor),
                 ),
               ],

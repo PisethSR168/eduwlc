@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eduwlc/constant.dart';
+import 'package:eduwlc/constants/constant.dart';
 
 class ScorePage extends StatefulWidget {
   const ScorePage({super.key});

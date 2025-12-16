@@ -1,7 +1,8 @@
-import 'main_navigation.dart';
+import 'package:eduwlc/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:eduwlc/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'main_navigation.dart';
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
@@ -13,46 +14,34 @@ class LoginUser extends StatefulWidget {
 class _LoginUserState extends State<LoginUser> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
 
-  // Replaced Future<bool> with Future<void> as AuthService returns a Map now
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _attemptLogin() async {
-    if (_isLoading) return;
-
-    setState(() {
-      _isLoading = true; // Start loading
-    });
-
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Basic client-side validation
     if (username.isEmpty || password.isEmpty) {
-      _showSnackBar('Please enter both username and password.');
-      setState(() {
-        _isLoading = false;
-      });
+      _showSnackBar('Please enter both email and password.');
       return;
     }
 
-    final authService = AuthService();
-    // CALL: Receive the result from the service
-    final result = await authService.login(username, password);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final result = await authProvider.login(username, password);
 
     if (mounted) {
-      setState(() {
-        _isLoading = false; // Stop loading
-      });
-
-      // CHECK: Use the result boolean
       if (result) {
-        // Successful login: Navigate to the main screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainNavigation()),
         );
       } else {
-        // Failed login: Show error message
         _showSnackBar(
           'Login failed. Please check your credentials and try again.',
         );
@@ -61,13 +50,16 @@ class _LoginUserState extends State<LoginUser> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: const Duration(seconds: 3)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoadingFromProvider = authProvider.isLoading;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Login', style: TextStyle(color: Colors.white)),
@@ -75,25 +67,29 @@ class _LoginUserState extends State<LoginUser> {
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: ListView(
+        padding: const EdgeInsets.all(15.0),
         children: <Widget>[
           Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.fromLTRB(70, 70, 70, 70),
+            padding: const EdgeInsets.fromLTRB(70, 70, 70, 50),
             child: Image.asset('assets/wlc_logo.png', width: 120, height: 120),
           ),
-          Container(
-            padding: const EdgeInsets.all(15),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: TextField(
               controller: _usernameController,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: 'Username',
+                labelText: 'Username (Email)',
                 prefixIcon: Icon(Icons.account_circle),
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(15),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: TextField(
               controller: _passwordController,
               obscureText: true,
@@ -104,26 +100,28 @@ class _LoginUserState extends State<LoginUser> {
               ),
             ),
           ),
+
           Container(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            height: 70,
             child: ElevatedButton(
-              onPressed: () => _attemptLogin(),
+              onPressed: isLoadingFromProvider ? null : _attemptLogin,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 75, 51, 212),
+                backgroundColor: const Color.fromARGB(255, 75, 51, 212),
               ),
               child:
-                  _isLoading
+                  isLoadingFromProvider
                       ? const SizedBox(
-                        width: 18,
-                        height: 18,
+                        width: 24,
+                        height: 24,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
+                          strokeWidth: 3,
                           color: Colors.white,
                         ),
                       )
                       : const Text(
                         'Login',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
             ),
           ),

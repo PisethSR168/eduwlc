@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:eduwlc/screens/book_page.dart';
 import 'package:eduwlc/screens/subject_page.dart';
-import 'package:eduwlc/constant.dart';
+import 'package:eduwlc/constants/constant.dart';
 import 'package:eduwlc/screens/home_page.dart';
 import 'package:eduwlc/screens/profile_page.dart';
 
@@ -18,7 +17,6 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     const HomePage(),
     const SubjectPage(),
-    const BookListPage(),
     const ProfilePage(),
   ];
 

@@ -1,17 +1,20 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:eduwlc/constants/app_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  // Use 10.0.2.2 for Android Emulator
-  static const String _baseUrl = "http://10.0.2.2:8000/api";
   static const String _tokenKey = 'auth_token';
 
-  // --- 1. Login Function ---
+  static String get _baseApiUrl => Appurl.url;
+
+  Uri _buildUrl(String path) {
+    return Uri.parse('$_baseApiUrl/v1/$path');
+  }
+
   Future<bool> login(String username, String password) async {
-    // Corrected to include /v1/
-    final url = Uri.parse('$_baseUrl/v1/login');
+    final url = _buildUrl('login');
 
     try {
       final response = await http.post(
@@ -35,7 +38,7 @@ class AuthService {
           return true;
         } else {
           developer.log(
-            'Login failed: Token not found in response.',
+            'Login failed: Token not found in response. Body: ${response.body}',
             name: 'AuthService',
           );
           return false;
@@ -57,13 +60,11 @@ class AuthService {
     }
   }
 
-  // --- 2. Helper to retrieve the token ---
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
   }
 
-  // --- 3. Generic method for making authenticated GET requests ---
   Future<Map<String, dynamic>?> fetchData(String path) async {
     final token = await getToken();
     if (token == null) {
@@ -74,7 +75,7 @@ class AuthService {
       return null;
     }
 
-    final url = Uri.parse('$_baseUrl/v1/$path');
+    final url = _buildUrl(path);
 
     try {
       final response = await http.get(
@@ -90,7 +91,7 @@ class AuthService {
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else if (response.statusCode == 401 || response.statusCode == 403) {
         developer.log(
-          'Authorization Failed for $path: Token might be expired or invalid.',
+          'Authorization Failed for $path: Token might be expired or invalid. Status: ${response.statusCode}',
           name: 'AuthService',
         );
         return null;
@@ -111,17 +112,14 @@ class AuthService {
     }
   }
 
-  // --- 4. Fetch User Profile Data (Uses fetchData) ---
   Future<Map<String, dynamic>?> getProfile() async {
     return await fetchData('profile');
   }
 
-  // --- 5. Logout Function ---
   Future<bool> logout() async {
     final token = await getToken();
-    final url = Uri.parse('$_baseUrl/v1/logout');
+    final url = _buildUrl('logout');
 
-    // Always clear the local token, even if the API call fails
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
 
@@ -140,7 +138,6 @@ class AuthService {
         },
       );
 
-      // Server returns success or failure, but local token is gone either way
       if (response.statusCode == 200 || response.statusCode == 204) {
         developer.log('Server logout successful.', name: 'AuthService');
       } else {
