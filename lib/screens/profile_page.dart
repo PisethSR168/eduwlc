@@ -156,13 +156,47 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/Piseth.jpg'),
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: kWhiteColor,
+                    ),
+                    child:
+                        displayAvatarUrl.isNotEmpty
+                            ? ClipOval(
+                              child: Image.network(
+                                displayAvatarUrl,
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stack) => Center(
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 50,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          75,
+                                          51,
+                                          212,
+                                        ),
+                                      ),
+                                    ),
+                              ),
+                            )
+                            : Center(
+                              child: Icon(
+                                Icons.person,
+                                size: 50,
+                                color: const Color.fromARGB(255, 75, 51, 212),
+                              ),
+                            ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'PISETH SONG',
+                    userName,
                     style: TextStyle(
                       color: kWhiteColor,
                       fontSize: 20,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,14 +31,28 @@ class AuthService {
         if (token != null) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString(_tokenKey, token);
+          developer.log('Login successful. Token stored.', name: 'AuthService');
           return true;
         } else {
+          developer.log(
+            'Login failed: Token not found in response.',
+            name: 'AuthService',
+          );
           return false;
         }
       } else {
+        developer.log(
+          'Login API Error (${response.statusCode}): ${response.body}',
+          name: 'AuthService',
+        );
         return false;
       }
     } catch (e) {
+      developer.log(
+        'Network Error during login: $e',
+        name: 'AuthService',
+        error: e,
+      );
       return false;
     }
   }
@@ -52,6 +67,10 @@ class AuthService {
   Future<Map<String, dynamic>?> fetchData(String path) async {
     final token = await getToken();
     if (token == null) {
+      developer.log(
+        "No authentication token found. Cannot fetch data.",
+        name: 'AuthService',
+      );
       return null;
     }
 
@@ -70,11 +89,24 @@ class AuthService {
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else if (response.statusCode == 401 || response.statusCode == 403) {
+        developer.log(
+          'Authorization Failed for $path: Token might be expired or invalid.',
+          name: 'AuthService',
+        );
         return null;
       } else {
+        developer.log(
+          'API Fetch Error (${response.statusCode}) for path $path: ${response.body}',
+          name: 'AuthService',
+        );
         return null;
       }
     } catch (e) {
+      developer.log(
+        'Network Error during data fetch for $path: $e',
+        name: 'AuthService',
+        error: e,
+      );
       return null;
     }
   }
@@ -94,11 +126,12 @@ class AuthService {
     await prefs.remove(_tokenKey);
 
     if (token == null) {
+      developer.log("Local token already cleared.", name: 'AuthService');
       return true;
     }
 
     try {
-      await http.post(
+      final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
@@ -108,8 +141,21 @@ class AuthService {
       );
 
       // Server returns success or failure, but local token is gone either way
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        developer.log('Server logout successful.', name: 'AuthService');
+      } else {
+        developer.log(
+          'Logout failed on server side (${response.statusCode}). Local token cleared.',
+          name: 'AuthService',
+        );
+      }
       return true;
     } catch (e) {
+      developer.log(
+        'Network Error during logout. Local token cleared: $e',
+        name: 'AuthService',
+        error: e,
+      );
       return true;
     }
   }

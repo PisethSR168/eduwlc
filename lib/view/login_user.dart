@@ -1,6 +1,7 @@
 import 'main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:eduwlc/services/auth_service.dart';
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
@@ -70,14 +71,14 @@ class _LoginUserState extends State<LoginUser> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Login', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromARGB(255, 0, 227, 42),
+        backgroundColor: const Color.fromARGB(255, 75, 51, 212),
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: ListView(
         children: <Widget>[
           Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            padding: const EdgeInsets.fromLTRB(70, 70, 70, 70),
             child: Image.asset('assets/wlc_logo.png', width: 120, height: 120),
           ),
           Container(
@@ -106,16 +107,24 @@ class _LoginUserState extends State<LoginUser> {
           Container(
             padding: const EdgeInsets.all(15),
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MainNavigation(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: Text('Login'),
+              onPressed: () => _attemptLogin(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 75, 51, 212),
+              ),
+              child:
+                  _isLoading
+                      ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Text(
+                        'Login',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
             ),
           ),
         ],
