@@ -2,7 +2,7 @@ import 'package:eduwlc/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'main_navigation.dart';
+import '../main_navigation.dart';
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});

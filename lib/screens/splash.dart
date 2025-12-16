@@ -1,9 +1,9 @@
 import 'package:eduwlc/constants/constant.dart';
 import 'package:eduwlc/providers/auth_provider.dart';
-import 'package:eduwlc/view/main_navigation.dart';
+import 'package:eduwlc/screens/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'login_user.dart';
+import 'auth/login_user.dart';
 
 class Splash extends StatelessWidget {
   const Splash({super.key});

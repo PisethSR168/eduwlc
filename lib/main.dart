@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:eduwlc/view/splash.dart';
+import 'package:eduwlc/screens/splash.dart';
 import 'package:eduwlc/constants/constant.dart';
 import 'package:eduwlc/providers/auth_provider.dart';
 

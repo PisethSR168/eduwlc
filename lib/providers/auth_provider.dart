@@ -1,16 +1,71 @@
 import 'package:flutter/foundation.dart';
 import 'package:eduwlc/services/auth_service.dart';
-import 'package:eduwlc/models/user.dart';
+import 'package:eduwlc/services/subject_service.dart';
+import 'package:eduwlc/models/subject.dart';
+import 'package:eduwlc/models/course.dart';
 
-class AuthProvider extends ChangeNotifier {
-  final AuthService _authService = AuthService();
-  User? _user;
-  bool _isAuthenticated = false;
+class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
+  bool _isAuthenticated = false;
+  Map<String, dynamic>? _userData;
+  List<Subject> _subjects = [];
+  List<Course> _myCourses = [];
 
-  User? get user => _user;
-  bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
+  bool get isAuthenticated => _isAuthenticated;
+  Map<String, dynamic>? get userData => _userData;
+  List<Subject> get subjects => _subjects;
+  List<Course> get myCourses => _myCourses;
+
+  final AuthService _authService = AuthService();
+  final SubjectService _subjectService = SubjectService();
+
+  Future<bool> login(String username, String password) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final result = await _authService.login(username, password);
+
+    if (result) {
+      _isAuthenticated = true;
+      await Future.wait([fetchUserProfile(), fetchSubjects()]);
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return result;
+  }
+
+  Future<void> fetchUserProfile() async {
+    try {
+      final data = await _authService.getProfile();
+      if (data != null) {
+        _userData = data['user'] ?? data;
+
+        if (_userData!.containsKey('enrollments') &&
+            _userData!['enrollments'] != null) {
+          final List<dynamic> enrollmentList = _userData!['enrollments'];
+          _myCourses = enrollmentList.map((e) => Course.fromJson(e)).toList();
+        } else {
+          _myCourses = [];
+        }
+
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Profile fetch error: $e");
+    }
+  }
+
+  Future<void> fetchSubjects() async {
+    try {
+      final data = await _subjectService.fetchSubjects();
+      _subjects = data;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Subject fetch error: $e");
+    }
+  }
 
   Future<void> checkAuthenticationStatus() async {
     _isLoading = true;
@@ -18,53 +73,20 @@ class AuthProvider extends ChangeNotifier {
 
     final token = await _authService.getToken();
     if (token != null) {
-      await fetchUserProfile();
-    } else {
-      _isAuthenticated = false;
+      _isAuthenticated = true;
+      await Future.wait([fetchUserProfile(), fetchSubjects()]);
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<bool> login(String email, String password) async {
-    _isLoading = true;
-    notifyListeners();
-
-    final success = await _authService.login(email, password);
-
-    if (success) {
-      return await fetchUserProfile();
-    } else {
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> fetchUserProfile() async {
-    final profileData = await _authService.getProfile();
-
-    if (profileData != null) {
-      _user = User.fromJson(profileData);
-      _isAuthenticated = true;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } else {
-      await _authService.logout();
-      _isAuthenticated = false;
-      _user = null;
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
   Future<void> logout() async {
     await _authService.logout();
-    _user = null;
     _isAuthenticated = false;
+    _userData = null;
+    _subjects = [];
+    _myCourses = [];
     notifyListeners();
   }
 }

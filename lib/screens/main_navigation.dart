@@ -1,8 +1,8 @@
+import 'package:eduwlc/screens/home/course_page.dart';
 import 'package:flutter/material.dart';
-import 'package:eduwlc/screens/subject_page.dart';
 import 'package:eduwlc/constants/constant.dart';
-import 'package:eduwlc/screens/home_page.dart';
-import 'package:eduwlc/screens/profile_page.dart';
+import 'package:eduwlc/screens/home/home_page.dart';
+import 'package:eduwlc/screens/home/profile_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -16,7 +16,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const SubjectPage(),
+    const CoursePage(),
     const ProfilePage(),
   ];
 
@@ -36,8 +36,7 @@ class _MainNavigationState extends State<MainNavigation> {
         unselectedItemColor: kGreyColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.subject), label: 'Subject'),
-          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: 'Book'),
+          BottomNavigationBarItem(icon: Icon(Icons.subject), label: 'Course'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'My'),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:eduwlc/screens/home/subject_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constants/constant.dart';
 import 'score_page.dart';
@@ -84,11 +85,22 @@ class _HomePageState extends State<HomePage> {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               children: [
-                _buildCategoryCard(
-                  icon: Icons.category,
-                  title: 'Category',
-                  color: kCategoryColor,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SubjectPage(),
+                      ),
+                    );
+                  },
+                  child: _buildCategoryCard(
+                    icon: Icons.category,
+                    title: 'Subjects',
+                    color: kCategoryColor,
+                  ),
                 ),
+
                 _buildCategoryCard(
                   icon: Icons.school,
                   title: 'Boutique class',

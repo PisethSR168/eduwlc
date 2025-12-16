@@ -2,45 +2,41 @@ import 'dart:convert';
 import 'package:eduwlc/constants/app_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:eduwlc/models/subject.dart';
-import 'package:eduwlc/models/paginated_response.dart';
+import 'package:eduwlc/services/auth_service.dart';
 
 class SubjectService {
   static String get _baseApiUrl => Appurl.url;
+  final AuthService _authService = AuthService();
 
-  Uri _buildUrl(String path, [Map<String, dynamic>? queryParameters]) {
-    final uri = Uri.parse('$_baseApiUrl/v1/$path');
+  Future<List<Subject>> fetchSubjects() async {
+    final token = await _authService.getToken();
+    if (token == null) throw Exception('Authentication token missing.');
 
-    if (queryParameters != null) {
-      return uri.replace(
-        queryParameters: Map<String, String>.from(queryParameters),
-      );
-    }
-    return uri;
-  }
-
-  Future<PaginatedResponse<Subject>> fetchSubjects({
-    int page = 1,
-    String? token,
-  }) async {
-    final url = _buildUrl('subjects', {'page': page.toString()});
+    final url = Uri.parse('$_baseApiUrl/v1/subjects');
 
     try {
       final response = await http.get(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        final Map<String, dynamic> decodedData = json.decode(response.body);
 
-        return PaginatedResponse<Subject>.fromJson(data, Subject.fromJson);
+        final List<dynamic> subjectsJson = decodedData['subjects'] ?? [];
+
+        return subjectsJson
+            .map((json) => Subject.fromJson(json as Map<String, dynamic>))
+            .toList();
       } else {
-        throw Exception(
-          'Failed to load subjects: ${response.statusCode} ${response.body}',
-        );
+        throw Exception('Failed to load subjects: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to connect to the server: $e');
+      throw Exception('Connection error: $e');
     }
   }
 }
