@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 const kBackgroundColor = Color(0xFFF0F9FF);
-const ksplashlogoAssetsPath = 'assets/splashlogo.png';
+const ksplashlogoAssetsPath = 'assets/wlc_logo.png';
 const kAppName = 'EduWLC';
 
 const kPrimaryColor = Color(0xFF0EA5E9);
