@@ -1,5 +1,8 @@
+import 'package:eduwlc/models/subject_score.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:eduwlc/constants/constant.dart';
+import 'package:eduwlc/providers/auth_provider.dart';
 
 class ScorePage extends StatefulWidget {
   const ScorePage({super.key});
@@ -11,29 +14,29 @@ class ScorePage extends StatefulWidget {
 class _ScorePageState extends State<ScorePage> {
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userData = authProvider.userData;
+
+    List<SubjectScore> dynamicScores = [];
+    if (userData != null && userData['enrollments'] != null) {
+      final List<dynamic> enrollmentList = userData['enrollments'];
+      dynamicScores =
+          enrollmentList
+              .map(
+                (e) => SubjectScore.fromEnrollment(e as Map<String, dynamic>),
+              )
+              .toList();
+    }
+
     return Scaffold(
       backgroundColor: kLightGreyColor,
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: kWhiteColor),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
+        title: const Text(
           'Academic Scores',
-          style: TextStyle(
-            color: kWhiteColor,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: Icon(Icons.analytics_outlined, color: kWhiteColor, size: 24),
-          ),
-        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -46,117 +49,15 @@ class _ScorePageState extends State<ScorePage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [kPrimaryColor, kSecondaryColor],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: kPrimaryColor.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.school, color: kWhiteColor, size: 40),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Academic Performance',
-                      style: TextStyle(
-                        color: kWhiteColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Track your progress across all terms',
-                      style: TextStyle(
-                        color: kWhiteColor.withValues(alpha: 0.9),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildHeaderCard(),
               const SizedBox(height: 24),
 
-              // Term 1
-              _buildTermCard('ឆ្នាំទី 1 ឆមាស 1(Term:1)', [
-                SubjectScore('Art of Living', 52.0, 33.0, 85.0, 'A'),
-                SubjectScore(
-                  'Computer for Office Application',
-                  53.0,
-                  23.0,
-                  76.0,
-                  'B',
-                ),
-                SubjectScore('Core English I', 51.0, 33.0, 84.0, 'B+'),
-                SubjectScore('Critical Thinking', 49.0, 28.0, 77.0, 'B'),
-                SubjectScore(
-                  'Introduction to Economics',
-                  50.0,
-                  34.0,
-                  84.0,
-                  'B+',
-                ),
-              ]),
-              const SizedBox(height: 16),
+              // Now we loop through subjects and create a unique card for each
+              ...dynamicScores.map((score) => _buildSubjectScoreCard(score)),
 
-              // Term 2
-              _buildTermCard('ឆ្នាំទី 1 ឆមាស 2(Term:2)', [
-                SubjectScore('Net Programming I', 51.0, 34.0, 85.0, 'A'),
-                SubjectScore(
-                  'Fundamental of Computer Technology',
-                  55.0,
-                  36.0,
-                  91.0,
-                  'A',
-                ),
-                SubjectScore('Graphic Design', 45.0, 30.0, 75.0, 'B'),
-                SubjectScore(
-                  'Mathematics for Computing',
-                  56.0,
-                  26.0,
-                  82.0,
-                  'B+',
-                ),
-                SubjectScore('Programming Methodology', 55.0, 34.0, 89.0, 'A'),
-              ]),
               const SizedBox(height: 16),
-
-              // Term 3
-              _buildTermCard('ឆ្នាំទី 2 ឆមាស 1(Term:3)', []),
-              const SizedBox(height: 16),
-
-              // Total GPA
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4A5FBF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Total GPA 3.63',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              _buildGPACard(dynamicScores),
             ],
           ),
         ),
@@ -164,7 +65,51 @@ class _ScorePageState extends State<ScorePage> {
     );
   }
 
-  Widget _buildTermCard(String termTitle, List<SubjectScore> subjects) {
+  Widget _buildHeaderCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [kPrimaryColor, kSecondaryColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: kPrimaryColor.withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.school_outlined, color: kWhiteColor, size: 40),
+          const SizedBox(height: 12),
+          const Text(
+            'Academic Performance',
+            style: TextStyle(
+              color: kWhiteColor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            'Detailed subject-wise grade breakdown',
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.9),
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // This build a card where THE SUBJECT NAME is the title
+  Widget _buildSubjectScoreCard(SubjectScore score) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
@@ -172,27 +117,18 @@ class _ScorePageState extends State<ScorePage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
           ),
         ],
       ),
       child: Column(
         children: [
-          // Term Header
+          // Header: Subject Name
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  kPrimaryColor.withValues(alpha: 0.1),
-                  kSecondaryColor.withValues(alpha: 0.1),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: kPrimaryColor.withValues(alpha: 0.05),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -200,221 +136,138 @@ class _ScorePageState extends State<ScorePage> {
             ),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kPrimaryColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.calendar_today,
-                    color: kWhiteColor,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  termTitle,
-                  style: TextStyle(
-                    color: kDarkGreyColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                const Icon(Icons.book, color: kPrimaryColor, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    score.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: kDarkGreyColor,
+                    ),
                   ),
                 ),
+                _buildGradeBadge(score.grade),
               ],
             ),
           ),
 
-          // Subjects Table - only if there are subjects
-          if (subjects.isNotEmpty)
-            Container(
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              decoration: BoxDecoration(
-                color: kLightGreyColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  // Table Header
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            'Subject Name',
-                            style: TextStyle(
-                              color: kWhiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Midterm',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: kWhiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Final',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: kWhiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Total',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: kWhiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Grade',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: kWhiteColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Subject Rows
-                  ...subjects.map((subject) => _buildSubjectRow(subject)),
-                ],
-              ),
+          // Body: Scores as Rows
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _buildScoreRow("Attendance Grade", score.attendance),
+                _buildScoreRow("Listening Grade", score.listening),
+                _buildScoreRow("Writing Grade", score.writing),
+                _buildScoreRow("Reading Grade", score.reading),
+                _buildScoreRow("Speaking Grade", score.speaking),
+                _buildScoreRow("Midterm Grade", score.midterm),
+                _buildScoreRow("Final Exam Grade", score.finalScore),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Divider(),
+                ),
+                _buildScoreRow("TOTAL SCORE", score.total, isTotal: true),
+              ],
             ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSubjectRow(SubjectScore subject) {
-    Color gradeColor = _getGradeColor(subject.grade);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: kWhiteColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: kLightGreyColor, width: 1),
-      ),
+  Widget _buildScoreRow(String label, String value, {bool isTotal = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            flex: 3,
-            child: Text(
-              subject.name,
-              style: TextStyle(
-                color: kDarkGreyColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
+          Text(
+            label,
+            style: TextStyle(
+              color: isTotal ? kDarkGreyColor : kGreyColor,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
             ),
           ),
-          Expanded(
-            child: Text(
-              subject.midterm.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: kDarkGreyColor, fontSize: 12),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              subject.finalScore.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: kDarkGreyColor, fontSize: 12),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              subject.total.toString(),
-              textAlign: TextAlign.center,
-              style: TextStyle(color: kDarkGreyColor, fontSize: 12),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: gradeColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: gradeColor, width: 1),
-              ),
-              child: Text(
-                subject.grade,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: gradeColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          Text(
+            value,
+            style: TextStyle(
+              color: isTotal ? kPrimaryColor : kDarkGreyColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildGradeBadge(String grade) {
+    Color color = _getGradeColor(grade);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color),
+      ),
+      child: Text(
+        grade,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGPACard(List<SubjectScore> scores) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4A5FBF),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        'Overall Average: ${_calculateAverage(scores)}',
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: kWhiteColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  String _calculateAverage(List<SubjectScore> scores) {
+    if (scores.isEmpty) return "0.0";
+    double total = scores.fold(
+      0,
+      (sum, item) => sum + double.parse(item.total),
+    );
+    return (total / scores.length).toStringAsFixed(2);
   }
 
   Color _getGradeColor(String grade) {
     switch (grade) {
       case 'A':
-        return const Color(0xFF4CAF50); // Green
+        return Colors.green;
       case 'B+':
-        return const Color(0xFF2196F3); // Blue
+        return Colors.blue;
       case 'B':
-        return const Color(0xFFFF9800); // Orange
+        return Colors.orange;
       case 'C+':
-        return const Color(0xFFFFC107); // Amber
+        return Colors.amber;
       case 'C':
-        return const Color(0xFFFF5722); // Deep Orange
+        return Colors.deepOrange;
       default:
         return kGreyColor;
     }
   }
-}
-
-class SubjectScore {
-  final String name;
-  final double midterm;
-  final double finalScore;
-  final double total;
-  final String grade;
-
-  SubjectScore(
-    this.name,
-    this.midterm,
-    this.finalScore,
-    this.total,
-    this.grade,
-  );
 }

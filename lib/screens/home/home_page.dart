@@ -1,3 +1,4 @@
+import 'package:eduwlc/screens/home/course_page.dart';
 import 'package:eduwlc/screens/home/subject_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constants/constant.dart';
@@ -55,7 +56,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 24),
 
-            // Category Grid
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -90,14 +89,46 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        builder: (context) => const CoursePage(),
+                      ),
+                    );
+                  },
+                  child: _buildCategoryCard(
+                    icon: Icons.live_tv,
+                    title: 'All Course',
+                    color: kBoutiqueColor,
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
                         builder: (context) => const SubjectPage(),
                       ),
                     );
                   },
                   child: _buildCategoryCard(
                     icon: Icons.category,
-                    title: 'Subjects',
+                    title: 'All Subjects',
                     color: kCategoryColor,
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ScorePage(),
+                      ),
+                    );
+                  },
+                  child: _buildCategoryCard(
+                    icon: Icons.score,
+                    title: 'My Score',
+                    color: kLeaderboardColor,
                   ),
                 ),
 
@@ -116,31 +147,10 @@ class _HomePageState extends State<HomePage> {
                   title: 'Bookstore',
                   color: kBookstoreColor,
                 ),
-                _buildCategoryCard(
-                  icon: Icons.live_tv,
-                  title: 'Live course',
-                  color: kLiveColor,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ScorePage(),
-                      ),
-                    );
-                  },
-                  child: _buildCategoryCard(
-                    icon: Icons.score,
-                    title: 'Score',
-                    color: kLeaderboardColor,
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 32),
 
-            // Recommended Course Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -173,7 +183,6 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
 
-            // Course Cards
             SizedBox(
               height: 200,
               child: ListView(

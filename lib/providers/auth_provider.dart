@@ -1,3 +1,4 @@
+import 'package:eduwlc/services/course_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:eduwlc/services/auth_service.dart';
 import 'package:eduwlc/services/subject_service.dart';
@@ -19,6 +20,23 @@ class AuthProvider with ChangeNotifier {
 
   final AuthService _authService = AuthService();
   final SubjectService _subjectService = SubjectService();
+  final CourseService _courseService = CourseService();
+
+  List<Course> _allCourses = [];
+  List<Course> get allCourses => _allCourses;
+
+  Future<void> fetchSchoolCourses() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _allCourses = await _courseService.fetchAllCourses();
+    } catch (e) {
+      debugPrint("All Courses fetch error: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 
   Future<bool> login(String username, String password) async {
     _isLoading = true;
@@ -45,7 +63,11 @@ class AuthProvider with ChangeNotifier {
         if (_userData!.containsKey('enrollments') &&
             _userData!['enrollments'] != null) {
           final List<dynamic> enrollmentList = _userData!['enrollments'];
-          _myCourses = enrollmentList.map((e) => Course.fromJson(e)).toList();
+          _myCourses =
+              enrollmentList
+                  .where((e) => e != null)
+                  .map((e) => Course.fromJson(e))
+                  .toList();
         } else {
           _myCourses = [];
         }
