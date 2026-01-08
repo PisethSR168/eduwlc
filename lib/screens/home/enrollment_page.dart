@@ -1,133 +1,273 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:eduwlc/constants/constant.dart';
+import 'package:eduwlc/providers/auth_provider.dart';
 
-class EnrollmentPage extends StatelessWidget {
-  final dynamic apiResponse;
-
-  const EnrollmentPage({super.key, required this.apiResponse});
+class EnrollmentPage extends StatefulWidget {
+  const EnrollmentPage({super.key});
 
   @override
+  State<EnrollmentPage> createState() => _EnrollmentPageState();
+}
+
+class _EnrollmentPageState extends State<EnrollmentPage> {
+  @override
   Widget build(BuildContext context) {
-    final List enrollments = apiResponse['enrollments'] ?? [];
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userData = authProvider.userData;
+
+    // Use the same logic to grab enrollments from the provider
+    List<dynamic> enrollments = [];
+    if (userData != null && userData['enrollments'] != null) {
+      enrollments = userData['enrollments'];
+    }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FD),
+      backgroundColor: kLightGreyColor,
       appBar: AppBar(
-        title: const Text(
-          "My Enrollments",
-          style: TextStyle(fontWeight: FontWeight.bold, color: kWhiteColor),
-        ),
         backgroundColor: kPrimaryColor,
         elevation: 0,
+        title: const Text(
+          'My Enrollment',
+          style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),
+        ),
       ),
-      body:
-          enrollments.isEmpty
-              ? const Center(child: Text("No enrollments found"))
-              : ListView.builder(
-                padding: const EdgeInsets.all(20),
-                itemCount: enrollments.length,
-                itemBuilder: (context, index) {
-                  final item = enrollments[index];
-                  final offering = item['course_offering'] ?? {};
-                  final subject = offering['subject'] ?? {};
-                  final teacher = offering['teacher'] ?? {};
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [kPrimaryColor.withValues(alpha: 0.1), kLightGreyColor],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildHeaderCard(enrollments.length),
+              const SizedBox(height: 24),
 
-                  return _buildEnrollmentCard(
-                    subject,
-                    teacher,
-                    offering,
-                    item['status'],
-                  );
-                },
-              ),
+              // Mapping your API data to the modern cards
+              ...enrollments.map((e) => _buildModernEnrollmentCard(e)),
+
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildEnrollmentCard(
-    dynamic subject,
-    dynamic teacher,
-    dynamic offering,
-    String status,
-  ) {
+  Widget _buildHeaderCard(int count) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: kWhiteColor,
-        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [kPrimaryColor, Color(0xFF6A1B9A)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: kPrimaryColor.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: kWhiteColor.withValues(alpha: 0.2),
+            child: const Icon(Icons.school, color: kWhiteColor, size: 30),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Enrollment Status',
+            style: TextStyle(
+              color: kWhiteColor,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'You have $count active courses',
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.8),
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernEnrollmentCard(dynamic data) {
+    final offering = data['course_offering'] ?? {};
+    final subject = offering['subject'] ?? {};
+    final teacher = offering['teacher'] ?? {};
+    final classroom = offering['classroom'] ?? {};
+    final status = data['status'] ?? 'N/A';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: kWhiteColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Card Header with Status Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            decoration: BoxDecoration(
+              color: kPrimaryColor.withValues(alpha: 0.03),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  subject['code'] ?? '',
-                  style: const TextStyle(
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        subject['name'] ?? 'Unknown',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: kDarkGreyColor,
+                        ),
+                      ),
+                      Text(
+                        subject['code'] ?? '',
+                        style: const TextStyle(
+                          color: kPrimaryColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 _buildStatusBadge(status),
               ],
             ),
-            const SizedBox(height: 5),
-            Text(
-              subject['name'] ?? 'Unknown Course',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          // Detail Section
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildDetailRow(
+                  "Instructor",
+                  teacher['name'] ?? 'N/A',
+                  Icons.person_outline,
+                  Colors.blue,
+                ),
+                const SizedBox(height: 12),
+                _buildDetailRow(
+                  "Schedule",
+                  "${offering['schedule']} (${offering['time_slot']})",
+                  Icons.access_time,
+                  Colors.orange,
+                ),
+                const SizedBox(height: 12),
+                _buildDetailRow(
+                  "Classroom",
+                  "Room ${classroom['room_number'] ?? 'N/A'}",
+                  Icons.location_on_outlined,
+                  Colors.teal,
+                ),
+                const SizedBox(height: 12),
+                _buildDetailRow(
+                  "Course Fee",
+                  "\$${offering['fee']}",
+                  Icons.payments_outlined,
+                  Colors.green,
+                ),
+              ],
             ),
-            const Divider(height: 30),
-            _buildIconInfo(
-              Icons.person,
-              "Teacher: ${teacher['name'] ?? 'N/A'}",
-            ),
-            const SizedBox(height: 10),
-            _buildIconInfo(
-              Icons.calendar_month,
-              "Schedule: ${offering['schedule']} (${offering['time_slot']})",
-            ),
-            const SizedBox(height: 10),
-            _buildIconInfo(Icons.payments, "Fee: \$${offering['fee']}"),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildIconInfo(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: kGreyColor),
-        const SizedBox(width: 10),
-        Text(text, style: const TextStyle(color: kDarkGreyColor)),
-      ],
+  Widget _buildDetailRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: kLightGreyColor.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 18, color: color),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 11, color: kGreyColor),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: kDarkGreyColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildStatusBadge(String status) {
     bool isStudying = status.toLowerCase() == 'studying';
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color:
-            isStudying
-                ? Colors.green.withOpacity(0.1)
-                : Colors.orange.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        color: isStudying ? Colors.green : Colors.orange,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         status.toUpperCase(),
-        style: TextStyle(
-          color: isStudying ? Colors.green : Colors.orange,
+        style: const TextStyle(
+          color: kWhiteColor,
           fontSize: 10,
           fontWeight: FontWeight.bold,
         ),

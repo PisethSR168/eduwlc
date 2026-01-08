@@ -2,6 +2,8 @@ import 'package:eduwlc/providers/auth_provider.dart';
 import 'package:eduwlc/screens/auth/login_user.dart';
 import 'package:eduwlc/screens/home/about_page.dart';
 import 'package:eduwlc/screens/home/enrollment_page.dart';
+import 'package:eduwlc/screens/home/notification_page.dart';
+import 'package:eduwlc/screens/home/password_page.dart';
 import 'package:eduwlc/screens/home/score_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -119,9 +121,7 @@ class ProfilePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    EnrollmentPage(apiResponse: userData),
+                            builder: (context) => EnrollmentPage(),
                           ),
                         );
                       },
@@ -145,11 +145,32 @@ class ProfilePage extends StatelessWidget {
                       color: Colors.orange,
                       onTap: () {},
                     ),
+
+                    _buildModernMenuItem(
+                      icon: Icons.key,
+                      title: 'Change Password',
+                      color: Colors.red,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePasswordPage(),
+                          ),
+                        );
+                      },
+                    ),
                     _buildModernMenuItem(
                       icon: Icons.notifications_none,
                       title: 'Notifications',
-                      color: Colors.pink,
-                      onTap: () {},
+                      color: Colors.purple,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationPage(),
+                          ),
+                        );
+                      },
                     ),
                   ]),
 

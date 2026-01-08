@@ -1,5 +1,4 @@
 import 'package:eduwlc/constants/constant.dart';
-import 'package:eduwlc/models/subject.dart';
 import 'package:flutter/material.dart';
 
 class SubjectDetailPage extends StatelessWidget {

@@ -156,4 +156,67 @@ class AuthService {
       return true;
     }
   }
+
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final token = await getToken();
+    if (token == null) {
+      return {'status': false, 'message': 'Authentication required'};
+    }
+
+    final url = _buildUrl('change_password');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'current_password': currentPassword,
+          'new_password': newPassword,
+          'new_password_confirmation': confirmPassword,
+        }),
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      developer.log(
+        'Error during changePassword: $e',
+        name: 'AuthService',
+        error: e,
+      );
+      return {'status': false, 'message': 'Network connection error'};
+    }
+  }
+
+  Future<Map<String, dynamic>> sendRequestReview({
+    required int teacherId,
+    required String title,
+    required String body,
+  }) async {
+    final token = await getToken();
+    final url = _buildUrl('send_notification');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'user_id': teacherId, 'title': title, 'body': body}),
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      return {'status': false, 'message': 'Connection error: $e'};
+    }
+  }
 }

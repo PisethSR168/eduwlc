@@ -1,4 +1,6 @@
 import 'package:eduwlc/screens/home/course_page.dart';
+import 'package:eduwlc/screens/home/notification_page.dart';
+import 'package:eduwlc/screens/home/request_review_page.dart';
 import 'package:eduwlc/screens/home/subject_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constants/constant.dart';
@@ -41,12 +43,20 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: Icon(
-              Icons.notifications_outlined,
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.notifications_outlined),
               color: const Color.fromARGB(255, 75, 51, 212),
-              size: 28,
+              iconSize: 28,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationPage(),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -132,16 +142,28 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
 
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RequestReviewPage(),
+                      ),
+                    );
+                  },
+                  child: _buildCategoryCard(
+                    icon: Icons.score,
+                    title: 'Request Review',
+                    color: Colors.pink,
+                  ),
+                ),
+
                 _buildCategoryCard(
                   icon: Icons.school,
                   title: 'Boutique class',
                   color: kBoutiqueColor,
                 ),
-                _buildCategoryCard(
-                  icon: Icons.menu_book,
-                  title: 'Free course',
-                  color: kFreeColor,
-                ),
+
                 _buildCategoryCard(
                   icon: Icons.store,
                   title: 'Bookstore',
