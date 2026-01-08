@@ -1,4 +1,3 @@
-import 'package:eduwlc/models/subject_score.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:eduwlc/constants/constant.dart';
@@ -53,7 +52,6 @@ class _ScorePageState extends State<ScorePage> {
               _buildHeaderCard(),
               const SizedBox(height: 24),
 
-              // Now we loop through subjects and create a unique card for each
               ...dynamicScores.map((score) => _buildSubjectScoreCard(score)),
 
               const SizedBox(height: 16),
@@ -108,7 +106,6 @@ class _ScorePageState extends State<ScorePage> {
     );
   }
 
-  // This build a card where THE SUBJECT NAME is the title
   Widget _buildSubjectScoreCard(SubjectScore score) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -124,7 +121,6 @@ class _ScorePageState extends State<ScorePage> {
       ),
       child: Column(
         children: [
-          // Header: Subject Name
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -153,7 +149,6 @@ class _ScorePageState extends State<ScorePage> {
             ),
           ),
 
-          // Body: Scores as Rows
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -269,5 +264,66 @@ class _ScorePageState extends State<ScorePage> {
       default:
         return kGreyColor;
     }
+  }
+}
+
+class SubjectScore {
+  final String name;
+  final String attendance;
+  final String listening;
+  final String writing;
+  final String reading;
+  final String speaking;
+  final String midterm;
+  final String finalScore;
+  final String total;
+  final String grade;
+
+  SubjectScore({
+    required this.name,
+    required this.attendance,
+    required this.listening,
+    required this.writing,
+    required this.reading,
+    required this.speaking,
+    required this.midterm,
+    required this.finalScore,
+    required this.total,
+    required this.grade,
+  });
+
+  factory SubjectScore.fromEnrollment(Map<String, dynamic> json) {
+    String f(dynamic v) => (v == null || v == "null") ? "0" : v.toString();
+
+    double att = double.tryParse(f(json['attendance_grade'])) ?? 0;
+    double lis = double.tryParse(f(json['listening_grade'])) ?? 0;
+    double wri = double.tryParse(f(json['writing_grade'])) ?? 0;
+    double rea = double.tryParse(f(json['reading_grade'])) ?? 0;
+    double spe = double.tryParse(f(json['speaking_grade'])) ?? 0;
+    double mid = double.tryParse(f(json['midterm_grade'])) ?? 0;
+    double fin = double.tryParse(f(json['final_grade'])) ?? 0;
+
+    double totalSum = att + lis + wri + rea + spe + mid + fin;
+
+    return SubjectScore(
+      name: json['course_offering']?['subject']?['name'] ?? "Unknown Subject",
+      attendance: f(json['attendance_grade']),
+      listening: f(json['listening_grade']),
+      writing: f(json['writing_grade']),
+      reading: f(json['reading_grade']),
+      speaking: f(json['speaking_grade']),
+      midterm: f(json['midterm_grade']),
+      finalScore: f(json['final_grade']),
+      total: totalSum.toStringAsFixed(1),
+      grade: _calculateGrade(totalSum),
+    );
+  }
+
+  static String _calculateGrade(double score) {
+    if (score >= 85) return "A";
+    if (score >= 75) return "B+";
+    if (score >= 65) return "B";
+    if (score >= 50) return "C";
+    return "F";
   }
 }
