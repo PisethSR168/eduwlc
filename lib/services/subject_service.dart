@@ -12,7 +12,7 @@ class SubjectService {
     final token = await _authService.getToken();
     if (token == null) throw Exception('Authentication token missing.');
 
-    final url = Uri.parse('$_baseApiUrl/v1/subjects');
+    final url = Uri.parse('$_baseApiUrl/api/v1/subjects');
 
     try {
       final response = await http.get(

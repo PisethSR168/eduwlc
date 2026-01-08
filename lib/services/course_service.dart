@@ -10,7 +10,7 @@ class CourseService {
 
   Future<List<Course>> fetchAllCourses() async {
     final token = await _authService.getToken();
-    final url = Uri.parse('$_baseApiUrl/v1/courses');
+    final url = Uri.parse('$_baseApiUrl/api/v1/courses');
 
     try {
       final response = await http.get(

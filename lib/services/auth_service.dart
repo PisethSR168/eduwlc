@@ -10,7 +10,7 @@ class AuthService {
   static String get _baseApiUrl => Appurl.url;
 
   Uri _buildUrl(String path) {
-    return Uri.parse('$_baseApiUrl/v1/$path');
+    return Uri.parse('$_baseApiUrl/api/v1/$path');
   }
 
   Future<bool> login(String username, String password) async {
