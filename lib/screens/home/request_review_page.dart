@@ -65,7 +65,7 @@ class _RequestReviewPageState extends State<RequestReviewPage> {
                   ),
                 ),
                 hint: const Text("Choose a course"),
-                value: _selectedTeacherId,
+                initialValue: _selectedTeacherId,
                 items:
                     enrollments.map<DropdownMenuItem<int>>((dynamic emp) {
                       final course = emp['course_offering'];
