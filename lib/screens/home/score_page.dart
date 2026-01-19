@@ -30,12 +30,22 @@ class _ScorePageState extends State<ScorePage> {
     return Scaffold(
       backgroundColor: kLightGreyColor,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: kWhiteColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         backgroundColor: kPrimaryColor,
         elevation: 0,
         title: const Text(
           'Academic Report',
           style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: kWhiteColor),
+            onPressed: () => authProvider.fetchUserProfile(),
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

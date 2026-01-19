@@ -15,6 +15,7 @@ class SubjectPage extends StatelessWidget {
       backgroundColor: kLightGreyColor,
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
+        iconTheme: IconThemeData(color: kWhiteColor),
         elevation: 0,
         title: Text(
           'Academic Subjects',
@@ -32,7 +33,7 @@ class SubjectPage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [kPrimaryColor.withValues(alpha: 0.1), kLightGreyColor],
+            colors: [kPrimaryColor.withOpacity(0.1), kLightGreyColor],
           ),
         ),
         child: _buildBody(context, authProvider),
@@ -62,7 +63,7 @@ class SubjectPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: kPrimaryColor.withValues(alpha: 0.3),
+                  color: kPrimaryColor.withOpacity(0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -83,7 +84,7 @@ class SubjectPage extends StatelessWidget {
                 Text(
                   'Manage your ${authProvider.subjects.length} registered subjects',
                   style: TextStyle(
-                    color: kWhiteColor.withValues(alpha: 0.9),
+                    color: kWhiteColor.withOpacity(0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -91,7 +92,6 @@ class SubjectPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
           ...authProvider.subjects.map(
             (subject) => _buildSubjectCard(context, subject),
           ),
@@ -108,45 +108,48 @@ class SubjectPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 12,
-        ),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: kPrimaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+      child: IconTheme(
+        data: const IconThemeData(color: kWhiteColor),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 12,
           ),
-          child: Icon(Icons.book_outlined, color: kPrimaryColor),
-        ),
-        title: Text(
-          subject.name,
-          style: TextStyle(
-            color: kDarkGreyColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Text(
-          'Code: ${subject.code} • Credits: ${subject.creditHours}',
-        ),
-        trailing: Icon(Icons.chevron_right, color: kGreyColor),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SubjectDetailPage(subject: subject),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: kPrimaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-          );
-        },
+            child: const Icon(Icons.book_outlined),
+          ),
+          title: Text(
+            subject.name,
+            style: const TextStyle(
+              color: kDarkGreyColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          subtitle: Text(
+            'Code: ${subject.code} • Credits: ${subject.creditHours}',
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SubjectDetailPage(subject: subject),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

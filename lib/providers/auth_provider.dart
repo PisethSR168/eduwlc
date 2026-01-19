@@ -103,6 +103,10 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> init() async {
+    await checkAuthenticationStatus();
+  }
+
   Future<void> logout() async {
     await _authService.logout();
     _isAuthenticated = false;

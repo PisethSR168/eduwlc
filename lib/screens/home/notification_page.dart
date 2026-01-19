@@ -28,6 +28,12 @@ class _NotificationPageState extends State<NotificationPage> {
           'All Notifications',
           style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: kWhiteColor),
+            onPressed: () => authProvider.fetchUserProfile(),
+          ),
+        ],
       ),
       body:
           allNotifications.isEmpty

@@ -1,9 +1,11 @@
+import 'package:eduwlc/providers/auth_provider.dart';
 import 'package:eduwlc/screens/home/course_page.dart';
 import 'package:eduwlc/screens/home/notification_page.dart';
 import 'package:eduwlc/screens/home/request_review_page.dart';
 import 'package:eduwlc/screens/home/subject_page.dart';
 import 'package:flutter/material.dart';
 import 'package:eduwlc/constants/constant.dart';
+import 'package:provider/provider.dart';
 import 'score_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -43,6 +45,17 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.refresh),
+              color: const Color.fromARGB(255, 75, 51, 212),
+              iconSize: 28,
+              onPressed: () {
+                Provider.of<AuthProvider>(context, listen: false).init();
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(

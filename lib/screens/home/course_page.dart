@@ -30,6 +30,7 @@ class _CoursePageState extends State<CoursePage> {
       backgroundColor: kLightGreyColor,
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
+        iconTheme: IconThemeData(color: kWhiteColor),
         elevation: 0,
         title: Text(
           'School Course Catalog',
@@ -39,6 +40,12 @@ class _CoursePageState extends State<CoursePage> {
             fontSize: 20,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh, color: kWhiteColor),
+            onPressed: () => authProvider.fetchSchoolCourses(),
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

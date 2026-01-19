@@ -58,7 +58,18 @@ class ProfilePage extends StatelessWidget {
             : '';
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFFF8F9FD),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: kWhiteColor),
+            onPressed: () => authProvider.fetchUserProfile(),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

@@ -12,6 +12,7 @@ class CourseDetailPage extends StatelessWidget {
       backgroundColor: kLightGreyColor,
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
+        iconTheme: IconThemeData(color: kWhiteColor),
         elevation: 0,
         title: const Text("Course Details"),
       ),
