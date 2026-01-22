@@ -40,77 +40,86 @@ class _RequestReviewPageState extends State<RequestReviewPage> {
         backgroundColor: kPrimaryColor,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kPrimaryColor.withOpacity(0.1), kLightGreyColor],
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeaderCard(),
-                const SizedBox(height: 30),
-                _buildLabel("Select Teacher/Subject"),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<int>(
-                  decoration: _inputDecoration("Choose a course"),
-                  hint: const Text("Choose a course"),
-                  value: _selectedTeacherId,
-                  items: enrollments.map<DropdownMenuItem<int>>((dynamic emp) {
-                    final course = emp['course_offering'];
-                    return DropdownMenuItem<int>(
-                      value: course['teacher_id'],
-                      child: Text(
-                        "${course['subject']['name']} (ID: ${course['teacher_id']})",
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (val) => setState(() => _selectedTeacherId = val),
-                  validator: (val) =>
-                      val == null ? "Please select a teacher" : null,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Select Teacher/Subject",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: kGreyColor,
                 ),
-                const SizedBox(height: 20),
-                _buildLabel("Message Title"),
-                TextFormField(
-                  controller: _titleController,
-                  decoration: _inputDecoration("e.g. Assignment Review"),
-                  validator: (v) => v!.isEmpty ? "Title is required" : null,
-                ),
-                const SizedBox(height: 20),
-                _buildLabel("Your Message"),
-                TextFormField(
-                  controller: _bodyController,
-                  maxLines: 5,
-                  decoration: _inputDecoration(
-                    "Describe what you want the teacher to review...",
+              ),
+              const SizedBox(height: 10),
+
+              // Dropdown to pick teacher from enrolled courses
+              DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: kLightGreyColor.withOpacity(0.5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: BorderSide.none,
                   ),
-                  validator: (v) =>
-                      v!.isEmpty ? "Message body is required" : null,
                 ),
-                const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submitRequest,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      elevation: 5,
-                      shadowColor: kPrimaryColor.withOpacity(0.4),
+                hint: const Text("Choose a course"),
+                value: _selectedTeacherId,
+                items:
+                    enrollments.map<DropdownMenuItem<int>>((dynamic emp) {
+                      final course = emp['course_offering'];
+                      return DropdownMenuItem<int>(
+                        value:
+                            course['teacher_id'], // This is the ID used for user_id in API
+                        child: Text(
+                          "${course['subject']['name']} (ID: ${course['teacher_id']})",
+                        ),
+                      );
+                    }).toList(),
+                onChanged: (val) => setState(() => _selectedTeacherId = val),
+                validator:
+                    (val) => val == null ? "Please select a teacher" : null,
+              ),
+
+              const SizedBox(height: 20),
+              _buildLabel("Message Title"),
+              TextFormField(
+                controller: _titleController,
+                decoration: _inputDecoration("e.g. Assignment Review"),
+                validator: (v) => v!.isEmpty ? "Title is required" : null,
+              ),
+
+              const SizedBox(height: 20),
+              _buildLabel("Your Message"),
+              TextFormField(
+                controller: _bodyController,
+                maxLines: 5,
+                decoration: _inputDecoration(
+                  "Describe what you want the teacher to review...",
+                ),
+                validator:
+                    (v) => v!.isEmpty ? "Message body is required" : null,
+              ),
+
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _submitRequest,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPrimaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: kWhiteColor)
-                        : const Text(
+                  ),
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
                             "Send Request",
                             style: TextStyle(
                               color: kWhiteColor,
