@@ -104,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Positioned(bottom: -40, child: _buildStatsCard(userData)),
+                Positioned(bottom: -40, child: _buildStatsCard(authProvider)),
               ],
             ),
 
@@ -288,7 +288,30 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsCard(dynamic userData) {
+  Widget _buildStatsCard(AuthProvider authProvider) {
+    final userData = authProvider.userData;
+    final int courseCount = authProvider.myCourses.length;
+
+    // Try to get certificate count from userData if it exists, otherwise use 0
+    // Sometimes it might be inside the enrollments where 'status' is 'completed'
+    int certificateCount = 0;
+    if (userData != null) {
+      if (userData.containsKey('certificates_count')) {
+        certificateCount =
+            int.tryParse(userData['certificates_count'].toString()) ?? 0;
+      } else if (userData.containsKey('enrollments')) {
+        final enrollments = userData['enrollments'] as List<dynamic>;
+        certificateCount =
+            enrollments
+                .where(
+                  (e) =>
+                      e != null &&
+                      e['status']?.toString().toLowerCase() == 'completed',
+                )
+                .length;
+      }
+    }
+
     return Container(
       width: 320,
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -306,15 +329,9 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildStatItem(
-            'Courses',
-            userData['courses_count']?.toString() ?? '0',
-          ),
+          _buildStatItem('Courses', courseCount.toString()),
           _buildVerticalDivider(),
-          _buildStatItem(
-            'Certfs',
-            userData['certificates_count']?.toString() ?? '0',
-          ),
+          _buildStatItem('Certfs', certificateCount.toString()),
         ],
       ),
     );
