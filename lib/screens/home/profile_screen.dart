@@ -312,11 +312,6 @@ class ProfileScreen extends StatelessWidget {
           ),
           _buildVerticalDivider(),
           _buildStatItem(
-            'Hours',
-            userData['hours_completed']?.toString() ?? '0',
-          ),
-          _buildVerticalDivider(),
-          _buildStatItem(
             'Certfs',
             userData['certificates_count']?.toString() ?? '0',
           ),

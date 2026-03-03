@@ -10,7 +10,7 @@ import 'package:m_scms/services/book_service.dart';
 import 'package:m_scms/services/classroom_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool _isAuthenticated = false;
   Map<String, dynamic>? _userData;
   List<Subject> _subjects = [];
@@ -130,14 +130,21 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final token = await _authService.getToken();
-    if (token != null) {
-      _isAuthenticated = true;
-      await Future.wait([fetchUserProfile(), fetchSubjects()]);
+    try {
+      final token = await _authService.getToken();
+      if (token != null) {
+        _isAuthenticated = true;
+        await Future.wait([
+          fetchUserProfile(),
+          fetchSubjects(),
+        ]).timeout(const Duration(seconds: 10));
+      }
+    } catch (e) {
+      debugPrint("Auth verification failed: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> init() async {

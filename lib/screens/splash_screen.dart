@@ -5,15 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth/login_screen.dart';
 
-class Splash extends StatelessWidget {
+class Splash extends StatefulWidget {
   const Splash({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<Splash> {
+  bool _hasNavigated = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkAuth();
+  }
+
+  void _checkAuth() {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    if (!authProvider.isLoading) {
+    if (!authProvider.isLoading && !_hasNavigated) {
+      _hasNavigated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder:
@@ -25,6 +39,13 @@ class Splash extends StatelessWidget {
         );
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // We still observe authProvider to show the loading indicator if needed,
+    // but the navigation logic is moved to _checkAuth/didChangeDependencies.
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       body: Container(
