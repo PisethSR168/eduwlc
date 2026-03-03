@@ -42,8 +42,9 @@ class _LoginUserState extends State<LoginScreen> {
 
         bool isStudent = roles.any((role) {
           if (role is String) return role.toLowerCase() == 'student';
-          if (role is Map)
+          if (role is Map) {
             return role['name']?.toString().toLowerCase() == 'student';
+          }
           return false;
         });
 

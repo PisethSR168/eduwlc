@@ -39,19 +39,14 @@ const kLiveColor = Color(0xFF86EFAC);
 const kLeaderboardColor = Color(0xFF059669);
 
 class Constant {
-  static const url = "http://192.168.1.3";
+  static const url = "http://scms.local";
 
   static String resolveUrl(String? originalUrl) {
     if (originalUrl == null || originalUrl.isEmpty) return '';
 
     String processedUrl = originalUrl.trim();
     final baseUrl = Constant.url;
-    final localHosts = [
-      'scms.local',
-      '192.168.1.3:8200',
-      'localhost',
-      '127.0.0.1',
-    ];
+    final localHosts = ['scms.local'];
 
     String cleanBaseUrl =
         baseUrl.endsWith('/')

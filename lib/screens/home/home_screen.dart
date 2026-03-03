@@ -10,7 +10,6 @@ import 'package:m_scms/screens/home/book_screen.dart';
 import 'score_screen.dart';
 import 'package:m_scms/screens/home/course_detail_screen.dart';
 import 'package:m_scms/screens/home/classroom_screen.dart';
-import 'package:m_scms/screens/home/certificate_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
